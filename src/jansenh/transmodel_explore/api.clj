@@ -1,11 +1,15 @@
 (ns jansenh.transmodel-explore.api
-  (:require [jansenh.transmodel.parser.utilities :refer [parse-datetime]]))
+  "API wrapper over jansenh/transmodel"
+  (:require [jansenh.transmodel.parser.core :as parser]
+            [jansenh.transmodel.parser.calendar :as cal]
+            [jansenh.transmodel.generator.timetable :as tt]
+            [jansenh.transmodel.netex.registry :as reg]
+            [jansenh.transmodel.netex.line :as line]
+            [jansenh.transmodel.netex.explore :as exp]
+            [jansenh.transmodel.netex.extract :as ext]
+            [jansenh.transmodel.netex.interchanges :as intrc]
+            )
+  (:import [java.time LocalDate]))
 
 
-(def tzt
-  "Circuit breaker"
-  (parse-datetime "2025-01-15T14:30:00"))
 
-(comment
-  (println tzt)
-  )

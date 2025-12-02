@@ -1,12 +1,18 @@
 (ns notebooks.netex
-  (:require [scicloj.clay.v2.main]
+  (:require [jansenh.transmodel.parser.core :as parser]
+            [jansenh.transmodel.parser.calendar :as cal]
+            [jansenh.transmodel.generator.timetable :as tt]
+            [jansenh.transmodel.netex.registry :as reg]
+            [jansenh.transmodel.netex.line :as line]
+            [jansenh.transmodel.netex.explore :as exp]
+            [jansenh.transmodel.netex.extract :as ext]
+            [jansenh.transmodel.netex.interchanges :as intrc]
             [jansenh.transmodel-explore.api :as api]
-            #_[scicloj.kindly.v4.kind :as kind]
-            #_[tablecloth.api :as tc]
-            #_[clojure.string :as str]
-            #_[scicloj.clay.v2.api :as clay]
-            #_[scicloj.tableplot.v1.plotly :as plotly]
-            #_[tech.v3.datatype.datetime :as datetime]))
+            [scicloj.clay.v2.api :as clay]
+            [scicloj.clay.v2.main]
+            [scicloj.kindly.v4.kind :as kind]
+            [tablecloth.api :as tc]
+            [clojure.string :as str]))
 
 
 ;;  NeTEx explore notebook
@@ -28,12 +34,28 @@
 ;;  described in the README file under the root of this project.
 
 
-(println api/tzt)
-(println "yikes")
+  (def shared-data-file "/home/jansenh/data/rb_norway-aggregated-netex/_KOL_shared_data.xml")
+  (def line-data-file
+    "/home/jansenh/data/rb_norway-aggregated-netex/KOL_KOL-Line-8_5986_1025_Fogn---Judaberg---Helgoy.xml")
+
+  (def shared-data (parser/parse-xml-file shared-data-file))
+  (def line-data (parser/parse-xml-file line-data-file))
 
 
+  ;; Set date ranges
+  (def date-range (cal/weeks-ahead 6))
+  (def from-date (:from date-range))
+  (def to-date (:to date-range))
+
+  ;; Build calendar index
+
+  (def calendar-index (cal/build-calendar-index shared-data))
+date-range
+(:stats calendar-index)
+;; Check stats calendar-index
 
 
+  
 
 
 

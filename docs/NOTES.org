@@ -1,0 +1,29 @@
+#+title:  Notes
+#+author: Henning Jansen
+#+email:  henning.jansen@jansenh.no
+#+date:   2025-12-01
+#+STARTUP: overview
+#+STARTUP: hidestars
+
+Where are we? Welcome to *clj-transmodel-explore*, an interactive notebook for
+data exploration over NeTEx data with the brilliantly crafted *clj-transmodel*
+library.
+
+* Notebook environment
+** Dependencies
+   I never really understood what is the difference in value between using the
+   single Noj deps vs. individual libraries. Meanwhile:
+
+#+begin_src clojure
+  {:deps {org.clojure/clojure {:mvn/version "1.12.3"}
+          jansenh/clj-transmodel {:mvn/version "0.2.0"}
+          org.scicloj/clay {:mvn/version "2.0.3"}
+          org.scicloj/kindly {:mvn/version "4-beta21"}
+          org.scicloj/tableplot {:mvn/version "1-beta14"}
+          scicloj/metamorph {:mvn/version "0.2.4"}
+          scicloj/tablecloth {:mvn/version "7.062"}}
+#+end_src
+
+#+begin_src clojure
+  {:deps org.scicloj/noj {:mvn/version "2-beta19.1"}}
+#+end_src
