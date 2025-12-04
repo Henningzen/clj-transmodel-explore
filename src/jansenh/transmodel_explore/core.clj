@@ -429,51 +429,51 @@
   (intrc/visualize-journey-interchanges specific-journey)
 
   ;; ------------------------------------------------------------------> comment
-  )
+  
 
-(comment ;; --------------------------------------------------------------------
+  (comment ;; --------------------------------------------------------------------
 
-  ;; Save for later, this can have value, rebuilt as a debug fn
-  ;;
-  (def pub-del (parser/parse-xml-file line-data-file))
+    ;; Save for later, this can have value, rebuilt as a debug fn
+    ;;
+    (def pub-del (parser/parse-xml-file line-data-file))
 
-  ;; Step 1
+    ;; Step 1
 
-  (def step1 (#'exp/find-child pub-del "dataObjects"))
-  (some? step1)
+    (def step1 (#'exp/find-child pub-del "dataObjects"))
+    (some? step1)
 
-  ;; Step 2
+    ;; Step 2
 
-  (def step2 (#'exp/find-children step1 "CompositeFrame"))
-  (count step2)
+    (def step2 (#'exp/find-children step1 "CompositeFrame"))
+    (count step2)
 
-  ;; Step 3
+    ;; Step 3
 
-  (def cf (first step2))
-  (def step3 (#'exp/find-child cf "frames"))
-  (some? step3)
+    (def cf (first step2))
+    (def step3 (#'exp/find-child cf "frames"))
+    (some? step3)
 
-  ;; Step 4
+    ;; Step 4
 
-  (def step4 (#'exp/find-children step3 "TimetableFrame"))
-  (count step4)
+    (def step4 (#'exp/find-children step3 "TimetableFrame"))
+    (count step4)
 
-  ;; Step 5
+    ;; Step 5
 
-  (def tf (first step4))
-  (def step5 (#'exp/find-child tf "vehicleJourneys"))
-  (some? step5)
+    (def tf (first step4))
+    (def step5 (#'exp/find-child tf "vehicleJourneys"))
+    (some? step5)
 
-  ;; Step 6 - THE TEST
+    ;; Step 6 - THE TEST
 
-  (def step6 (#'exp/find-children step5 "ServiceJourney"))
-  (count step6)
+    (def step6 (#'exp/find-children step5 "ServiceJourney"))
+    (count step6)
 
-  (def data (exp/explore-line-file line-data-file))
-  (:journey-count data)
+    (def data (exp/explore-line-file line-data-file))
+    (:journey-count data)
 
-  ;;-------------------------------------------------------------------> comment
-  )
+    ;;-------------------------------------------------------------------> comment
+    ))
 
 
 (comment
@@ -627,3 +627,4 @@
   ;; ------------------------------------------------------------------> comment
   ;;
   )
+;;; 
