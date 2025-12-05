@@ -6,7 +6,7 @@
 ;;-----------------------------------------------------------------------------
 
 (ns jansenh.transmodel-explore.core
-  "Add comment here."
+  "NeTEx datafile and linefile extract."
   (:require [jansenh.transmodel.parser.core :as parser]
             [jansenh.transmodel.parser.calendar :as cal]
             [jansenh.transmodel.generator.timetable :as tt]
@@ -29,12 +29,7 @@
 
 (comment
   (def shared-data-file "/home/jansenh/data/rb_norway-aggregated-netex/KOL/_KOL_shared_data.xml")
-  (def line-data-file "/home/jansenh/data/rb_norway-aggregated-netex/KOL/KOL_KOL-Line-8_5986_1025_Fogn---Judaberg---Helgoy.xml")
   (def line-data-file "/home/jansenh/data/rb_norway-aggregated-netex/KOL/KOL_KOL-Line-8_5900_518_518.xml")
-
-  ;; the data
-
-  ;; Parse files
 
   (def shared-data (parser/parse-xml-file shared-data-file))
   (def line-data (parser/parse-xml-file line-data-file))
@@ -85,41 +80,43 @@
   ;;
 
   ;; Get service journeys from line file
-
   (def journeys (tt/collect-service-journeys line-data))
   (count journeys)
 
-  (let [{:keys [from to]} (cal/weeks-ahead 6)
+  ;; Build timetable
+  (let [{:keys [from to]} (cal/weeks-ahead 1)
         timetable (tt/generate-timetable calendar-index journeys from to)]
-  ;; Do something with timetable
+    ;; Do something with timetable - transform, transduce etc ;; TODO: dive in, learn, explore
     (tt/print-timetable timetable :limit 20))
 
-;; Build timetable
-
-  (def timetable
-    (tt/generate-timetable calendar-index journeys from-date to-date))
-  ;; Check stats timetable
-
-  (first (map keys timetable))
-  (count timetable)
-  (take 10 timetable)
-
-;; ===========================================================================
+  ;; ===========================================================================
   ;;
   ;; Display human-readable timetable
   ;;
   ;; ===========================================================================
 
+  (def timetable
+    (tt/generate-timetable calendar-index journeys from-date to-date))
+    
   (tt/print-timetable timetable :limit 20)
 
-;; Generate SQL
+  ;; Check stats timetable
+  (first (map keys timetable))
+  (count timetable)
+  (take 10 timetable)
 
+  ;; Generate SQL  ;; TODO: Generate Postgres project from here
   (println tt/create-table-ddl)
   (doseq [trip (take 10 timetable)]
     (println (tt/generate-insert-sql trip)))
 
-;;--- comment
+  ;; TODO: Datomicize this!
+
+  ;;---> comment
+  
   )
+
+
 (comment ;; --------------------------------------------------------------------
 
   ;; Single day - multiple ways
@@ -144,8 +141,6 @@
      :wednesday (count sat)})
   ;; ------------------------------------------------------------------> comment
   )
-
-
 
 
 (comment ;; --------------------------------------------------------------------
@@ -357,7 +352,7 @@
   (first (:interchanges data))
 
   ;; Find journey chain starting from 1011
-  (def journey-1011 "KOL:ServiceJourney:5986_250619122708562_1011")
+  (def journey-1011 "KOL:ServiceJourney:5986_250619122708562_1011") ;; TODO: continue here ----------------------------------------------------
   (exp/find-journey-chain (:graph data) journey-1011)
 
   ;; Get details of connected journeys
@@ -429,51 +424,52 @@
   (intrc/visualize-journey-interchanges specific-journey)
 
   ;; ------------------------------------------------------------------> comment
+)
   
 
-  (comment ;; --------------------------------------------------------------------
+(comment ;; --------------------------------------------------------------------
 
-    ;; Save for later, this can have value, rebuilt as a debug fn
-    ;;
-    (def pub-del (parser/parse-xml-file line-data-file))
+  ;; Save for later, this can have value, rebuilt as a debug fn
+  ;;
+  (def pub-del (parser/parse-xml-file line-data-file))
 
-    ;; Step 1
+  ;; Step 1
 
-    (def step1 (#'exp/find-child pub-del "dataObjects"))
-    (some? step1)
+  (def step1 (#'exp/find-child pub-del "dataObjects"))
+  (some? step1)
 
-    ;; Step 2
+  ;; Step 2
 
-    (def step2 (#'exp/find-children step1 "CompositeFrame"))
-    (count step2)
+  (def step2 (#'exp/find-children step1 "CompositeFrame"))
+  (count step2)
 
-    ;; Step 3
+  ;; Step 3
 
-    (def cf (first step2))
-    (def step3 (#'exp/find-child cf "frames"))
-    (some? step3)
+  (def cf (first step2))
+  (def step3 (#'exp/find-child cf "frames"))
+  (some? step3)
 
-    ;; Step 4
+  ;; Step 4
 
-    (def step4 (#'exp/find-children step3 "TimetableFrame"))
-    (count step4)
+  (def step4 (#'exp/find-children step3 "TimetableFrame"))
+  (count step4)
 
-    ;; Step 5
+  ;; Step 5
 
-    (def tf (first step4))
-    (def step5 (#'exp/find-child tf "vehicleJourneys"))
-    (some? step5)
+  (def tf (first step4))
+  (def step5 (#'exp/find-child tf "vehicleJourneys"))
+  (some? step5)
 
-    ;; Step 6 - THE TEST
+  ;; Step 6 - THE TEST
 
-    (def step6 (#'exp/find-children step5 "ServiceJourney"))
-    (count step6)
+  (def step6 (#'exp/find-children step5 "ServiceJourney"))
+  (count step6)
 
-    (def data (exp/explore-line-file line-data-file))
-    (:journey-count data)
+  (def data (exp/explore-line-file line-data-file))
+  (:journey-count data)
 
-    ;;-------------------------------------------------------------------> comment
-    ))
+  ;;-------------------------------------------------------------------> comment
+  )
 
 
 (comment
@@ -511,11 +507,14 @@
   (interchanges/visualize-all-interchanges)
 
   ;; Find roundtrip chains
-  (interchanges/roundtrip-chains))
+  (interchanges/roundtrip-chains)
+  
+  )
 
 (comment
   (let [sj (reg/service-journey "KOL:ServiceJourney:5986_250619122708623_4020")]
-    (clojure.pprint/pprint (:passing-times sj))))
+    (clojure.pprint/pprint (:passing-times sj)))
+  )
 
 (comment
   (reg/reset-registry!)
@@ -541,7 +540,6 @@
 
   ;;
   ;; ------------------------------------------------------------------> comment
-
   )
 
 (comment
@@ -578,12 +576,15 @@
   (reg/operator "KOL:Operator:316")
 
   ;; Check a service journey with times
+
   (let [sj (reg/service-journey "KOL:ServiceJourney:5900_250619122707475_1002")]
     (clojure.pprint/pprint (:passing-times sj)))
 
   ;;
   ;; ------------------------------------------------------------------> comment
+
   )
+
 
 
 (comment
@@ -612,17 +613,17 @@
 
     )
 
+
   
   ;; Visualize all interchanges (first 5)
   (let [all-ic (reg/all-interchanges)]
     (doseq [ic (take 100 all-ic)]
       (interchanges/visualize-interchange ic)))
 
-
-
   (let [sj (reg/service-journey "KOL:ServiceJourneyInterchange:3244")]
     (clojure.pprint/pprint (:passing-times sj)))
   
+
   ;;
   ;; ------------------------------------------------------------------> comment
   ;;
